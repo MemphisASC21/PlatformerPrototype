@@ -5,6 +5,26 @@ using Platformer.Core;
 
 namespace Platformer.Player
 {
+    public bool DashBuffered => Time.time <= _lastDashPressedTime + _dashBufferTime;
+    public bool DashHeld { get; private set; }
+
+    private float _lastDashPressedTime = -999f; //when dash was last pressed
+    private float _dashBufferTime = 0.1f; //forgiveness window
+
+    public void SetDashBufferTime(float seconds)
+    {
+        _dashBufferTime = Mathf.Max(0f, seconds);
+    }
+
+    public void OnDashPressed()
+    {
+        _lastDashPressedTime = Time.time; //records time button was pressed
+    }
+
+    public void ConsumeDashBuffer()
+    {
+        _lastDashPressedTime = -999f;
+    }
     /*
      * ============================================================================
      * INPUT READER
