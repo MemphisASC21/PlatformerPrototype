@@ -96,6 +96,7 @@ namespace Platformer.Player
         // Component references (cached for performance)
         private Rigidbody2D rb;
         private InputReader inputReader;
+        private DashController dashController;
 
         // Coyote time tracking
         private float lastGroundedTime;
@@ -122,6 +123,7 @@ namespace Platformer.Player
 
         private void Start()
         {
+            dashController = GetComponent<DashController>();
             // Get InputReader from ServiceLocator
             inputReader = ServiceLocator.Get<InputReader>();
 
@@ -165,9 +167,6 @@ namespace Platformer.Player
 
         private void FixedUpdate()
         {
-            if (config == null || inputReader == null) return;
-
-            // Order matters! Ground check first, then movement, then jump
             UpdateGroundedState();
             UpdateHorizontalMovement();
             UpdateJump();
@@ -283,6 +282,10 @@ namespace Platformer.Player
 
         private void UpdateHorizontalMovement()
         {
+            // Don't override dash velocity
+            if (dashController != null && dashController.IsDashing)
+                return;
+
             // Get input from InputReader (already processed with deadzone)
             float inputX = inputReader.MoveInput.x;
 
@@ -407,6 +410,10 @@ namespace Platformer.Player
 
         private void UpdateGravityScale()
         {
+            // Dash controls its own gravity
+            if (dashController != null && dashController.IsDashing)
+                return;
+
             if (rb.linearVelocity.y < 0)
             {
                 // Falling - apply increased gravity

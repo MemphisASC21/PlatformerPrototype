@@ -2,29 +2,10 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using Platformer.Config;
 using Platformer.Core;
+using System;
 
 namespace Platformer.Player
 {
-    public bool DashBuffered => Time.time <= _lastDashPressedTime + _dashBufferTime;
-    public bool DashHeld { get; private set; }
-
-    private float _lastDashPressedTime = -999f; //when dash was last pressed
-    private float _dashBufferTime = 0.1f; //forgiveness window
-
-    public void SetDashBufferTime(float seconds)
-    {
-        _dashBufferTime = Mathf.Max(0f, seconds);
-    }
-
-    public void OnDashPressed()
-    {
-        _lastDashPressedTime = Time.time; //records time button was pressed
-    }
-
-    public void ConsumeDashBuffer()
-    {
-        _lastDashPressedTime = -999f;
-    }
     /*
      * ============================================================================
      * INPUT READER
@@ -105,6 +86,7 @@ namespace Platformer.Player
         /// Call ConsumeJumpBuffer() when you execute the jump.
         /// </summary>
         public bool JumpBuffered => jumpBufferTimer > 0f;
+        public bool DashBuffered => dashBufferTimer > 0f;
 
         /// <summary>
         /// True while the jump button is held down.
@@ -127,9 +109,11 @@ namespace Platformer.Player
         // Input System action references
         private InputAction moveAction;
         private InputAction jumpAction;
+        private InputAction dashAction;
 
         // Input buffering timers
         private float jumpBufferTimer;
+        private float dashBufferTimer;
 
         // Raw input before processing (for debugging)
         private Vector2 rawMoveInput;
@@ -210,11 +194,14 @@ namespace Platformer.Player
 
             moveAction = playerMap.FindAction("Move");
             jumpAction = playerMap.FindAction("Jump");
+            dashAction = playerMap.FindAction("Dash");
 
             if (moveAction == null)
                 Debug.LogError("[InputReader] 'Move' action not found in Player map!", this);
             if (jumpAction == null)
                 Debug.LogError("[InputReader] 'Jump' action not found in Player map!", this);
+            if (dashAction == null)
+                Debug.LogWarning("[InputReader] 'Dash' action not found in Player map. ");
         }
 
         private void EnableInputActions()
@@ -224,6 +211,13 @@ namespace Platformer.Player
             // Enable actions so they receive input
             moveAction.Enable();
             jumpAction.Enable();
+
+            //dash actions
+            if (dashAction != null)
+            {
+                dashAction.Enable();
+                dashAction.performed += OnDashPerformed;
+            }
 
             // Subscribe to jump button events
             // "performed" = button pressed, "canceled" = button released
@@ -241,6 +235,12 @@ namespace Platformer.Player
             // Unsubscribe from events (prevents memory leaks)
             jumpAction.performed -= OnJumpPerformed;
             jumpAction.canceled -= OnJumpCanceled;
+
+            if (dashAction != null)
+            {
+                dashAction.performed -= OnDashPerformed;
+                dashAction.Disable();
+            }
             InputSystem.onActionChange -= OnActionChange;
 
             // Disable actions
@@ -348,7 +348,16 @@ namespace Platformer.Player
          * This separation means PlayerController owns the "can I jump?" logic
          * (grounded check, coyote time, etc.) while we own the input timing.
          */
+        private void OnDashPerformed(InputAction.CallbackContext context)
+        {
+            float bufferDuration = config != null ? config.dashBufferDuration : 0.08f;
+            dashBufferTimer = bufferDuration;
+        }
 
+        public void ConsumeDashBuffer()
+        {
+            dashBufferTimer = 0f;
+        }
         private void OnJumpPerformed(InputAction.CallbackContext context)
         {
             JumpHeld = true;
@@ -378,6 +387,10 @@ namespace Platformer.Player
             if (jumpBufferTimer > 0f)
             {
                 jumpBufferTimer -= Time.deltaTime;
+            }
+            if (dashBufferTimer > 0f)
+            {
+                dashBufferTimer -= Time.deltaTime;
             }
         }
 
@@ -465,5 +478,8 @@ namespace Platformer.Player
                 prevPoint = nextPoint;
             }
         }
+
+
+
     }
 }
