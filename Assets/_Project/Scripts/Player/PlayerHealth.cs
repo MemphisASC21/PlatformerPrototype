@@ -32,4 +32,12 @@ public class PlayerHealth : MonoBehaviour
         //all other kill criteria here, UI calls, VFX, sound, etc
     }
 
+    //private void Update()
+   // {
+      //  if (Input.GetKeyDown(KeyCode.Space))
+      //  {
+       //     TakeDamage(10);
+       // }
+    //}
+
 }

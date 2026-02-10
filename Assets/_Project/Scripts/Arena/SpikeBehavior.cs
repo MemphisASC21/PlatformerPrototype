@@ -11,6 +11,7 @@ public class SpikeBehavior : MonoBehaviour
     private State currentState = State.Idle;
 
     [Header("Spike Settings")]
+    [SerializeField] private float damage = 10f;
     [SerializeField] private float attackSpeed = 15f;   
     [SerializeField] private float retractSpeed = 3f;   
     [SerializeField] private float spikeHeight = 1.5f;  
@@ -24,11 +25,17 @@ public class SpikeBehavior : MonoBehaviour
     {
         startPos = transform.position;
     }
-
+  
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("Player"))
         {
+            Debug.Log("Player collided with spike");
+            PlayerHealth playerHealth = other.GetComponent<PlayerHealth>();
+            if (playerHealth != null)
+            {
+                playerHealth.TakeDamage(damage);
+            }
             isPlayerNear = true;
             if (currentState == State.Idle)
             {

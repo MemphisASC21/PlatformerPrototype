@@ -8,6 +8,7 @@ namespace Platformer.Player
     public class DashController : MonoBehaviour
     {
         [Header("Config")]
+        [SerializeField] private TrailRenderer dashTrail;
         [SerializeField] private DashConfig config;
 
         // Public state — other scripts can read these but not change them
@@ -74,6 +75,7 @@ namespace Platformer.Player
             IsDashing = true;
             hasDash = false;
             dashTimer = config.dashDuration;
+            dashTrail.emitting = true;
 
             // Dash in input direction, or facing direction if no input
             float inputX = inputReader.MoveInput.x;
@@ -91,6 +93,7 @@ namespace Platformer.Player
         {
             IsDashing = false;
             cooldownTimer = config.dashCooldown;
+            dashTrail.emitting = false;
 
             // Restore gravity and reduce exit speed
             rb.gravityScale = 1f;

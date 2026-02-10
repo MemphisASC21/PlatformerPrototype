@@ -1,2 +1,13 @@
 fileFormatVersion: 2
 guid: 10ecd524ead87b04181c4cf04b4d62c9
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - dashTrail: {instanceID: 0}
+  - config: {fileID: 11400000, guid: 03862ce24de403f4b9fe233755f8ac90, type: 2}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

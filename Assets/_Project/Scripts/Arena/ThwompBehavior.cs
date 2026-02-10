@@ -14,6 +14,7 @@ public class ThwompBehavior : MonoBehaviour
 
     [Header("Thwomp Settings")]
     //[SerializeField] private float fallAcceleration = 20f;
+    [SerializeField] private float damage = 15f;
     [SerializeField] private float fallSpeed = 12f;
     [SerializeField] private float riseSpeed = 5f;
     [SerializeField] private float bottomWaitTime = 1f;
@@ -35,6 +36,12 @@ public class ThwompBehavior : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
+            Debug.Log("Player collided with spike");
+            PlayerHealth playerHealth = other.GetComponent<PlayerHealth>();
+            if (playerHealth != null)
+            {
+                playerHealth.TakeDamage(damage);
+            }
             isPlayerUnder = true;
 
             if (currentState == State.Idle)
