@@ -1,5 +1,6 @@
 using Platformer.Player;
 using System.Collections;
+using System.Diagnostics;
 using UnityEngine;
 
 public class ThwompBehavior : MonoBehaviour
@@ -20,7 +21,6 @@ public class ThwompBehavior : MonoBehaviour
     [SerializeField] private float bottomWaitTime = 1f;
     [SerializeField] private float topWaitTime = 0.5f;
     [SerializeField] private LayerMask groundLayer;
-    [SerializeField] private float thwompDamage = 20f;
 
     private Vector3 startPos;
     private Rigidbody2D rb;
@@ -36,12 +36,6 @@ public class ThwompBehavior : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            Debug.Log("Player collided with spike");
-            PlayerHealth playerHealth = other.GetComponent<PlayerHealth>();
-            if (playerHealth != null)
-            {
-                playerHealth.TakeDamage(damage);
-            }
             isPlayerUnder = true;
 
             if (currentState == State.Idle)
@@ -65,10 +59,10 @@ public class ThwompBehavior : MonoBehaviour
      */
      private void OnCollisionEnter2D(Collision2D collision)
      {
-        // See section 3 below for the damage logic
-        if (collision.gameObject.TryGetComponent<PlayerHealth>(out var health))
+        if (collision.gameObject.TryGetComponent<PlayerHealth>(out var playerHealth))
         {
-            health.TakeDamage(thwompDamage);
+            //Debug.Log("Player collided with thwomp");
+            playerHealth.TakeDamage(damage);
         }
      }
 

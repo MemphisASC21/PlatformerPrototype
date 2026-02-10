@@ -30,12 +30,6 @@ public class SpikeBehavior : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            Debug.Log("Player collided with spike");
-            PlayerHealth playerHealth = other.GetComponent<PlayerHealth>();
-            if (playerHealth != null)
-            {
-                playerHealth.TakeDamage(damage);
-            }
             isPlayerNear = true;
             if (currentState == State.Idle)
             {
@@ -52,6 +46,15 @@ public class SpikeBehavior : MonoBehaviour
         }
     }
 
+    //health
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.TryGetComponent<PlayerHealth>(out var playerHealth))
+        {
+            Debug.Log("Player collided with thwomp");
+            playerHealth.TakeDamage(damage);
+        }
+    }
     private IEnumerator SpikeRoutine()
     {
         currentState = State.Attacking;
