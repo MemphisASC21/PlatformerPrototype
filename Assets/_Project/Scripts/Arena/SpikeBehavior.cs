@@ -14,7 +14,7 @@ public class SpikeBehavior : MonoBehaviour
     [SerializeField] private float damage = 10f;
     [SerializeField] private float attackSpeed = 15f;   
     [SerializeField] private float retractSpeed = 3f;   
-    [SerializeField] private float spikeHeight = 1.5f;  
+    [SerializeField] private float spikeHeight = 1f;  
     [SerializeField] private float holdTime = 1f;      
     [SerializeField] private float cooldownTime = 0.5f; 
 

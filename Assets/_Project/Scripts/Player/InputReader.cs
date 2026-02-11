@@ -3,6 +3,7 @@ using UnityEngine.InputSystem;
 using Platformer.Config;
 using Platformer.Core;
 using System;
+using UnityEditor.Experimental.GraphView;
 
 namespace Platformer.Player
 {
@@ -215,6 +216,7 @@ namespace Platformer.Player
             //dash actions
             if (dashAction != null)
             {
+                Debug.Log("Dash input not being collected");
                 dashAction.Enable();
                 dashAction.performed += OnDashPerformed;
             }
@@ -350,6 +352,7 @@ namespace Platformer.Player
          */
         private void OnDashPerformed(InputAction.CallbackContext context)
         {
+            Debug.Log("Dash is being performed");
             float bufferDuration = config != null ? config.dashBufferDuration : 0.08f;
             dashBufferTimer = bufferDuration;
         }
@@ -357,6 +360,8 @@ namespace Platformer.Player
         public void ConsumeDashBuffer()
         {
             dashBufferTimer = 0f;
+            Debug.Log("Dash is not being performed");
+
         }
         private void OnJumpPerformed(InputAction.CallbackContext context)
         {

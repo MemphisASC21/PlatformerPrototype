@@ -6,6 +6,7 @@ MonoImporter:
   defaultReferences:
   - dashTrail: {instanceID: 0}
   - config: {fileID: 11400000, guid: 03862ce24de403f4b9fe233755f8ac90, type: 2}
+  - moveConfig: {fileID: 11400000, guid: b1688ee34559e6f428289922154836ac, type: 2}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

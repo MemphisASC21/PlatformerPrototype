@@ -26,6 +26,14 @@ public class ThwompBehavior : MonoBehaviour
     private Rigidbody2D rb;
     private bool isPlayerUnder = false;
 
+    /*box cast params
+    BoxCollider collider = (BoxCollider)gameObject.GetComponent<Collider>();
+    private float yHalfExtents = collider.bounds.extents.y;
+    private float yCenter = collider.bounds.center.y;
+    private float yUpper = transform.position.y + (yCenter + yHalfExtents);
+    private float yLower = transform.position.y + (yCenter - yHalfExtents);
+    */
+
     private void Start()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -53,7 +61,7 @@ public class ThwompBehavior : MonoBehaviour
         }
     }
 
-    /* ------Health to add in when we set that up----------
+    /* ------Health----------
      * also, make sure that the health is ONLY subtracted when the state is falling. That way, if the player bumps into it while rising
      * they don't die, same with cooldown (ex. they jump and hit the bottom of it.)
      */
@@ -75,7 +83,7 @@ public class ThwompBehavior : MonoBehaviour
          * THIS WAY WE CAN MAKE HIDEY SPOTS UNDER A THWOMP FOR PLAYER TO HIDE. AT TOP GET VARIABLES OF THE COLLIDER AND SEND A CAST DOWN
          * 
          */
-        RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, 50f, groundLayer);
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, groundLayer);
         if (hit.collider == null)
         {
             currentState = State.Idle;

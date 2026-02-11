@@ -1,6 +1,7 @@
 using UnityEngine;
 using Platformer.Config;
 using Platformer.Core;
+using UnityEngine.UIElements;
 
 namespace Platformer.Player
 {
@@ -10,6 +11,7 @@ namespace Platformer.Player
         [Header("Config")]
         [SerializeField] private TrailRenderer dashTrail;
         [SerializeField] private DashConfig config;
+        [SerializeField] private MovementConfig moveConfig;
 
         // Public state — other scripts can read these but not change them
         public bool IsDashing { get; private set; }
@@ -42,6 +44,7 @@ namespace Platformer.Player
             // Check for buffered dash input
             if (inputReader.DashBuffered && CanDash)
             {
+               
                 StartDash();
                 inputReader.ConsumeDashBuffer();
             }
@@ -80,9 +83,14 @@ namespace Platformer.Player
             // Dash in input direction, or facing direction if no input
             float inputX = inputReader.MoveInput.x;
             if (Mathf.Abs(inputX) > 0.1f)
+            {
                 dashDirection = Mathf.Sign(inputX);
+            
+            }
             else
+            {
                 dashDirection = rb.linearVelocity.x >= 0 ? 1f : -1f;
+            }
 
             // Set dash velocity and disable gravity
             rb.linearVelocity = new Vector2(dashDirection * config.dashSpeed, 0f);
@@ -96,7 +104,7 @@ namespace Platformer.Player
             dashTrail.emitting = false;
 
             // Restore gravity and reduce exit speed
-            rb.gravityScale = 1f;
+            rb.gravityScale = moveConfig.gravityScale;
             rb.linearVelocity = new Vector2(rb.linearVelocity.x * 0.5f, rb.linearVelocity.y);
         }
     }

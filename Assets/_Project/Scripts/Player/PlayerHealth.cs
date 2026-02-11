@@ -42,6 +42,7 @@ public class PlayerHealth : MonoBehaviour
         GetComponent<Rigidbody2D>().linearVelocity = Vector2.zero;
         // animator.SetTrigger("Die"); // Add this later
 
+        currentHealth = maxHealth;
         //now to move onto UI inside gamemanager script
         gameManager.DieProcess();
     }
