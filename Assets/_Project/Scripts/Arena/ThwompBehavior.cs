@@ -26,6 +26,9 @@ public class ThwompBehavior : MonoBehaviour
     private BoxCollider2D col;
     private bool isPlayerUnder = false;
 
+    //cam shake
+    private CameraShake cameraShake;
+
     /*box cast params
     BoxCollider collider = (BoxCollider)gameObject.GetComponent<Collider>();
     private float yHalfExtents = collider.bounds.extents.y;
@@ -39,6 +42,9 @@ public class ThwompBehavior : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         col = GetComponent<BoxCollider2D>();
         startPos = transform.position;
+        //get cam shake
+        cameraShake = Camera.main.GetComponent<CameraShake>();
+
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -102,6 +108,9 @@ public class ThwompBehavior : MonoBehaviour
             transform.position = Vector3.MoveTowards(transform.position, new Vector3(transform.position.x, targetY, 0), config.fallSpeed * Time.deltaTime);
             yield return null;
         }
+
+        //cam shake AFTER loop
+        cameraShake.PlayThwompShake();
 
         transform.position = new Vector3(transform.position.x, targetY, 0);
         currentState = State.Cooldown;

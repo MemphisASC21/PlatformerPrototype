@@ -63,6 +63,8 @@ namespace Platformer.Player
                  "Create an empty child GameObject at the bottom of the player.")]
         [SerializeField] private Transform groundCheckPoint;
 
+        private CameraShake cameraShake;
+
         /*
          * ------------------------------------------------------------------------
          * RUNTIME STATE
@@ -126,6 +128,8 @@ namespace Platformer.Player
             dashController = GetComponent<DashController>();
             // Get InputReader from ServiceLocator
             inputReader = ServiceLocator.Get<InputReader>();
+            //camShake
+            cameraShake = Camera.main.GetComponent<CameraShake>();
 
             if (inputReader == null)
             {
@@ -145,6 +149,7 @@ namespace Platformer.Player
                                  "Create an empty GameObject at the player's feet and assign it.", this);
             }
         }
+
 
         /*
          * ------------------------------------------------------------------------
@@ -214,6 +219,11 @@ namespace Platformer.Player
                 {
                     hasJumpedSinceGrounded = false;
                     isJumping = false;
+
+                    if (cameraShake != null)
+                    {
+                        cameraShake.PlayLandingShake();
+                    }
                 }
             }
         }
