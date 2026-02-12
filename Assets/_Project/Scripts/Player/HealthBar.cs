@@ -8,6 +8,6 @@ public class HealthBar : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        fillImage.fillAmount = playerHealth.HealthPecent;
+        fillImage.fillAmount = playerHealth.HealthPercent;
     }
 }

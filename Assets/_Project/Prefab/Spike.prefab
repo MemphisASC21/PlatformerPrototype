@@ -194,9 +194,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9e1248aaaec23644c8d7d945ee632d92, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  damage: 10
-  attackSpeed: 15
-  retractSpeed: 3
-  spikeHeight: 1.5
-  holdTime: 1
-  cooldownTime: 0.5
+  config: {fileID: 11400000, guid: 614e25dde3b627344b60fd6a4c6ec67e, type: 2}

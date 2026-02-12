@@ -222,11 +222,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5b6a290cf146b574d9f35b8cc2f7cc9c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  damage: 15
-  fallSpeed: 12
-  riseSpeed: 5
-  bottomWaitTime: 1
-  topWaitTime: 0.5
-  groundLayer:
-    serializedVersion: 2
-    m_Bits: 64
+  config: {fileID: 11400000, guid: 0e50ea003a9134b4fb2a04b499b9afe4, type: 2}

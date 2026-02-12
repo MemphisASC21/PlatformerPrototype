@@ -2,28 +2,28 @@ using Platformer.Player;
 using System.Collections;
 using System.Diagnostics;
 using UnityEngine;
+using Platformer.Config;
 
 public class ThwompBehavior : MonoBehaviour
 {
     /*------------------------------ABOUT THE SCRIPT------------------------
      * This is for the falling blocks. What it does is fall and rise at variable times (set in inspector). We can make fast
-     * and slow falling blocks this way. It sends a raycast down to detetct the ground to determine how far it "falls".*/
+     * and slow falling blocks this way. It sends a raycast down to detetct the ground to determine how far it "falls". 
+     * 
+     * Make sure you place thwomps NOT touching celings. If the box raycast is touching the celing (tagged as "ground") it will fire
+     * and "hit" the celing and won't move down.
+     */
 
     private enum State { Idle, Falling, Rising, Cooldown }
     private State currentState = State.Idle;
     //--FOR HEALTH SCRIPT, look at how vamp survivors did it-- private PlayerHealth _playerHealth;
 
     [Header("Thwomp Settings")]
-    //[SerializeField] private float fallAcceleration = 20f;
-    [SerializeField] private float damage = 15f;
-    [SerializeField] private float fallSpeed = 12f;
-    [SerializeField] private float riseSpeed = 5f;
-    [SerializeField] private float bottomWaitTime = 1f;
-    [SerializeField] private float topWaitTime = 0.5f;
-    [SerializeField] private LayerMask groundLayer;
+    [SerializeField] private ThwompConfig config;
 
     private Vector3 startPos;
     private Rigidbody2D rb;
+    private BoxCollider2D col;
     private bool isPlayerUnder = false;
 
     /*box cast params
@@ -37,6 +37,7 @@ public class ThwompBehavior : MonoBehaviour
     private void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        col = GetComponent<BoxCollider2D>();
         startPos = transform.position;
     }
 
@@ -67,10 +68,10 @@ public class ThwompBehavior : MonoBehaviour
      */
      private void OnCollisionEnter2D(Collision2D collision)
      {
-        if (collision.gameObject.TryGetComponent<PlayerHealth>(out var playerHealth))
+        if (collision.gameObject.TryGetComponent<PlayerHealth>(out var playerHealth) && currentState==State.Falling)
         {
             //Debug.Log("Player collided with thwomp");
-            playerHealth.TakeDamage(damage);
+            playerHealth.TakeDamage(config.damage);
         }
      }
 
@@ -83,28 +84,34 @@ public class ThwompBehavior : MonoBehaviour
          * THIS WAY WE CAN MAKE HIDEY SPOTS UNDER A THWOMP FOR PLAYER TO HIDE. AT TOP GET VARIABLES OF THE COLLIDER AND SEND A CAST DOWN
          * 
          */
-        RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, groundLayer);
+        Vector2 boxSize = new Vector2(col.bounds.size.x * 0.95f, col.bounds.size.y);
+        RaycastHit2D hit = Physics2D.BoxCast(transform.position, boxSize, 0f, Vector2.down, Mathf.Infinity, config.groundLayer);
+
         if (hit.collider == null)
         {
             currentState = State.Idle;
             yield break; 
         }
-        float targetY = hit.point.y + (transform.localScale.y / 2f);
+
+        float distanceToGround = hit.distance;
+        float targetY = transform.position.y - distanceToGround;
+        
         //fall
         while (transform.position.y > targetY)
         {
-            transform.position = Vector3.MoveTowards(transform.position, new Vector3(transform.position.x, targetY, 0), fallSpeed * Time.deltaTime);
+            transform.position = Vector3.MoveTowards(transform.position, new Vector3(transform.position.x, targetY, 0), config.fallSpeed * Time.deltaTime);
             yield return null;
         }
 
         transform.position = new Vector3(transform.position.x, targetY, 0);
         currentState = State.Cooldown;
-        yield return new WaitForSeconds(bottomWaitTime);
+        yield return new WaitForSeconds(config.bottomWaitTime);
+
         currentState = State.Rising;
 
         while (Vector2.Distance(transform.position, startPos) > 0.01f)
         {
-            transform.position = Vector3.MoveTowards(transform.position, startPos, riseSpeed * Time.deltaTime);
+            transform.position = Vector3.MoveTowards(transform.position, startPos, config.riseSpeed * Time.deltaTime);
             yield return null;
         }
         
@@ -113,7 +120,7 @@ public class ThwompBehavior : MonoBehaviour
         if (isPlayerUnder)
         {
             currentState = State.Cooldown;
-            yield return new WaitForSeconds(topWaitTime);
+            yield return new WaitForSeconds(config.topWaitTime);
             StartCoroutine(FallRoutine());
         }
         else

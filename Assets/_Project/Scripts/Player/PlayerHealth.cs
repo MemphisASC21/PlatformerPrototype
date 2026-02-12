@@ -9,10 +9,13 @@ public class PlayerHealth : MonoBehaviour
      * It also handles when you die, and redirects to the game manager for the UI and resetting the game. Checkpoints
      * are handeled in their own script and gameManager
      */
-
+    [Header("Settings")]
     [SerializeField] private float maxHealth = 100f;
+    [Header("VFX")]
+    [SerializeField] private GameObject bloodVfxPrefab;
+
     private float currentHealth;
-    public float HealthPecent => currentHealth / maxHealth;
+    public float HealthPercent => currentHealth / maxHealth;
     public bool IsAlive => currentHealth > 0;
     private GameManager gameManager;
 
@@ -28,6 +31,13 @@ public class PlayerHealth : MonoBehaviour
 
         currentHealth -= damage;
 
+        if (bloodVfxPrefab != null)
+        {
+            // We spawn it at current position. 
+            // Quaternion.identity means "no rotation" (pointing up/default).
+            Instantiate(bloodVfxPrefab, transform.position, Quaternion.identity);
+        }
+
         if (currentHealth <= 0)
         {
             Die();
@@ -41,10 +51,13 @@ public class PlayerHealth : MonoBehaviour
         GetComponent<PlayerController>().enabled = false;
         GetComponent<Rigidbody2D>().linearVelocity = Vector2.zero;
         // animator.SetTrigger("Die"); // Add this later
-
-        currentHealth = maxHealth;
         //now to move onto UI inside gamemanager script
         gameManager.DieProcess();
+    }
+
+    public void ResetHealth()
+    {
+        currentHealth = maxHealth;
     }
 
     /*-----Memphis's code below------

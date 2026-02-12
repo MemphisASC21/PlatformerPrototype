@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using Platformer.Config;
 
 public class SpikeBehavior : MonoBehaviour
 {
@@ -7,16 +8,12 @@ public class SpikeBehavior : MonoBehaviour
      * Basically here, I just reversed the Thwomp script. The logic is the same so that the player doesn't get hurt
      * if they run into the edge of the spikes, but the tip of the spikes will deal damage (just like the thwomp)
      */
+
+    [Header("Settings")]
+    [SerializeField] private SpikeConfig config;
+
     private enum State { Idle, Attacking, Retracting, Cooldown }
     private State currentState = State.Idle;
-
-    [Header("Spike Settings")]
-    [SerializeField] private float damage = 10f;
-    [SerializeField] private float attackSpeed = 15f;   
-    [SerializeField] private float retractSpeed = 3f;   
-    [SerializeField] private float spikeHeight = 1f;  
-    [SerializeField] private float holdTime = 1f;      
-    [SerializeField] private float cooldownTime = 0.5f; 
 
     private Vector3 startPos;
     private bool isPlayerNear = false;
@@ -51,38 +48,37 @@ public class SpikeBehavior : MonoBehaviour
     {
         if (collision.gameObject.TryGetComponent<PlayerHealth>(out var playerHealth))
         {
-            Debug.Log("Player collided with thwomp");
-            playerHealth.TakeDamage(damage);
+            playerHealth.TakeDamage(config.damage);
         }
     }
     private IEnumerator SpikeRoutine()
     {
         currentState = State.Attacking;
-        Vector3 targetPos = startPos + (Vector3.up * spikeHeight);
+        Vector3 targetPos = startPos + (Vector3.up * config.spikeHeight);
 
         //move up
         while (Vector3.Distance(transform.position, targetPos) > 0.01f)
         {
-            transform.position = Vector3.MoveTowards(transform.position, targetPos, attackSpeed * Time.deltaTime);
+            transform.position = Vector3.MoveTowards(transform.position, targetPos, config.attackSpeed * Time.deltaTime);
             yield return null;
         }
         transform.position = targetPos;
 
         //wait so its not too fast
-        yield return new WaitForSeconds(holdTime);
+        yield return new WaitForSeconds(config.holdTime);
 
         //go down
         currentState = State.Retracting;
         while (Vector3.Distance(transform.position, startPos) > 0.01f)
         {
-            transform.position = Vector3.MoveTowards(transform.position, startPos, retractSpeed * Time.deltaTime);
+            transform.position = Vector3.MoveTowards(transform.position, startPos, config.retractSpeed * Time.deltaTime);
             yield return null;
         }
         transform.position = startPos;
 
         //cooldown (so it doesn't repeat too fast)
         currentState = State.Cooldown;
-        yield return new WaitForSeconds(cooldownTime);
+        yield return new WaitForSeconds(config.cooldownTime);
 
         //repeat if they are stil there
         if (isPlayerNear)

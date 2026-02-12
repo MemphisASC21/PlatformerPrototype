@@ -1,15 +1,15 @@
+using Platformer.Config;
 using System.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
 
 public class BreakableBlockBehavior : MonoBehaviour
 {
-    //how to get the block object
-    public GameObject breakVFX;
+    [SerializeField] private BreakBlockConfig config;
+
     void Start()
     {
-        GetComponent<SpriteRenderer>().enabled = true;
-        GetComponent<Collider2D>().enabled = true;
+
     }
 
     private void OnCollisionEnter2D(Collision2D other)
@@ -21,8 +21,13 @@ public class BreakableBlockBehavior : MonoBehaviour
     }
     IEnumerator BlockBreak()
     {
-        //vfx logic
-        yield return new WaitForSeconds(.5f);
+        //vfx logic below if we get to it
+
+        //replaced the vfx check with null check in the meantime
+        if (config != null && config.breakDelay > 0)
+        {
+            yield return new WaitForSeconds(config.breakDelay);
+        }
         GetComponent<SpriteRenderer>().enabled = false;
         GetComponent<Collider2D>().enabled = false;
     }

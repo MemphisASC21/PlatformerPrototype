@@ -28,11 +28,17 @@ namespace Platformer.Player
         private float dashDirection;
         private bool hasDash = true;
 
+        //ZANE EDIT: For playerClimb, if anything bugs this is one of my changes
+        private PlayerClimb playerClimb;
+
         private void Start()
         {
             rb = GetComponent<Rigidbody2D>();
             inputReader = ServiceLocator.Get<InputReader>();
             playerController = GetComponent<PlayerController>();
+
+            //zane edit
+            playerClimb = GetComponent<PlayerClimb>();
         }
 
         private void Update()
@@ -40,6 +46,12 @@ namespace Platformer.Player
             // Tick cooldown
             if (cooldownTimer > 0f)
                 cooldownTimer -= Time.deltaTime;
+
+            //zane edit
+            if (playerClimb != null && playerClimb.isClimbing)
+            {
+                return;
+            }
 
             // Check for buffered dash input
             if (inputReader.DashBuffered && CanDash)

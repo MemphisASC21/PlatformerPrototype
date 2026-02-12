@@ -29,19 +29,19 @@ public class PlayerClimb : MonoBehaviour
      * we want to do this, we can talk about it in class.
      */
 
-    [Header("Settings")]
-    [SerializeField] private float climbSpeed = 5f;
-    [SerializeField] private float slideSpeed = 2f;
-    [SerializeField] private Vector2 wallJumpForce = new Vector2(10f, 15f);
-    [SerializeField] private float maxGripTime = 2f;
+    [Header("Configuration")]
+    [SerializeField] private ClimbConfig climbConfig; 
+    [SerializeField] private MovementConfig gravityConfig;
 
-    //this is how we get our gravity back
-    [SerializeField] private MovementConfig config;
+    //professor: it was bugging when I set it up in config. It would spawn then get left behind or not show up at all :(
+    [Header("Effects")]
+    [SerializeField] private ParticleSystem climbVfx;
 
     private Rigidbody2D rb;
     private InputReader inputReader;
     private Coroutine activeClimbRoutine;
-    private bool isClimbing = false;
+    //this needs to be accessed by dash climb
+    public bool isClimbing { get; private set; }
 
     private void Start()
     {
@@ -81,21 +81,35 @@ public class PlayerClimb : MonoBehaviour
     private IEnumerator ClimbRoutine()
     {
         isClimbing = true;
-        float currentGripTimer = maxGripTime;
-        
+        float currentGripTimer = climbConfig.maxGripTime;
+
         /*---Reset variables for climbing physics---*/
         //Turn off gravity. Since we have the slide down wall THEN fall, we have to turn off gravity so they don't just fall.
         rb.gravityScale = 0;
         rb.linearVelocity = Vector2.zero;
+        if (climbVfx != null) climbVfx.Play();
+
 
         // Loop forever until the Coroutine is stopped by OnTriggerExit or Jump
         while (true)
         {
-            // Safety Check
             if (inputReader == null) yield break;
-            float yInput = inputReader.MoveInput.y;
 
-            //wall jump
+            //Memphis's dash logic
+            if (inputReader.DashBuffered)
+            {
+                inputReader.ConsumeDashBuffer();
+                float dashTimer = climbConfig.dashClimbDuration;
+
+                while (dashTimer > 0)
+                {
+                    rb.linearVelocity = new Vector2(0f, climbConfig.dashClimbSpeed);
+                    dashTimer -= Time.deltaTime;
+                    yield return null;
+                }
+                rb.linearVelocity = Vector2.zero;
+            }
+
             if (inputReader.JumpBuffered)
             {
                 inputReader.ConsumeJumpBuffer();
@@ -103,38 +117,76 @@ public class PlayerClimb : MonoBehaviour
                 yield break;
             }
 
-            if (yInput > 0.1f) //check later, this may bug due to jumping. 
+            float yInput = inputReader.MoveInput.y;
+            if (yInput > 0.1f)
             {
-                rb.linearVelocity = new Vector2(rb.linearVelocity.x, climbSpeed);
-                currentGripTimer = maxGripTime; //refresh timer
+                rb.linearVelocity = new Vector2(rb.linearVelocity.x, climbConfig.climbSpeed);
+                currentGripTimer = climbConfig.maxGripTime;
             }
-            else //if sliding Down
+            else
             {
-                rb.linearVelocity = new Vector2(rb.linearVelocity.x, -slideSpeed);
-                currentGripTimer -= Time.deltaTime; //decreases the gri time, so after our grip ability they fall off 
-
+                rb.linearVelocity = new Vector2(rb.linearVelocity.x, -climbConfig.slideSpeed);
+                currentGripTimer -= Time.deltaTime;
 
                 if (currentGripTimer <= 0)
                 {
-                    //grip lost, turn gravity back on and kill this routine
-                    rb.gravityScale = config.gravityScale;
+                    if (climbVfx != null) climbVfx.Stop();
+                    rb.gravityScale = gravityConfig.gravityScale;
                     activeClimbRoutine = null;
                     isClimbing = false;
                     yield break;
                 }
             }
+
             yield return null;
         }
     }
+
+        /*----------Previous climb logic, before climb + dash implimentation-----------------
+         * 
+         * if (inputReader == null) yield break;
+        float yInput = inputReader.MoveInput.y;
+
+        //wall jump
+        if (inputReader.JumpBuffered)
+        {
+            inputReader.ConsumeJumpBuffer();
+            PerformWallJump();
+            yield break;
+        }
+
+        if (yInput > 0.1f) //check later, this may bug due to jumping. 
+        {
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, climbConfig.climbSpeed);
+            currentGripTimer = climbConfig.maxGripTime;
+        }
+        else //if sliding Down
+        {
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, -climbConfig.slideSpeed);
+            currentGripTimer -= Time.deltaTime;
+
+
+            if (currentGripTimer <= 0)
+            {
+                //grip lost, turn gravity back on and kill this routine
+                rb.gravityScale = gravityConfig.gravityScale;
+                activeClimbRoutine = null;
+                isClimbing = false;
+                yield break;
+            }
+        }
+        yield return null;*/
 
     private void PerformWallJump()
     {
         float jumpDir = -Mathf.Sign(transform.localScale.x);
 
         rb.linearVelocity = Vector2.zero;
-        rb.AddForce(new Vector2(jumpDir * wallJumpForce.x, wallJumpForce.y), ForceMode2D.Impulse);
+        rb.AddForce(new Vector2(jumpDir * climbConfig.wallJumpForce.x, climbConfig.wallJumpForce.y), ForceMode2D.Impulse);
 
-        rb.gravityScale = config.gravityScale;
+        if (climbVfx != null) climbVfx.Stop();
+
+        rb.gravityScale = gravityConfig.gravityScale;
         activeClimbRoutine = null;
         isClimbing = false;
     }
@@ -148,8 +200,9 @@ public class PlayerClimb : MonoBehaviour
                 StopCoroutine(activeClimbRoutine);
                 activeClimbRoutine = null;
             }
+            if (climbVfx != null) climbVfx.Stop();
             isClimbing = false;
-            rb.gravityScale = config.gravityScale;
+            rb.gravityScale = gravityConfig.gravityScale;
         }
     }
 }

@@ -1,6 +1,7 @@
 using Platformer.Player;
 using UnityEngine;
 using UnityEngine.Rendering;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -11,7 +12,7 @@ public class GameManager : MonoBehaviour
      */
 
     [Header("UI")]
-    public GameObject gameOverPanel;
+    [SerializeField] private UIPanel uiPanel;
     public int playerCheckpointIs { get; private set; }
     private bool isGameOver = false;
     private Vector3 respawnPoint;
@@ -19,8 +20,15 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-        gameOverPanel.SetActive(false);
         playerCheckpointIs = 0;
+
+        GameObject player = GameObject.FindGameObjectWithTag("Player");
+        if (player != null)
+        {
+            respawnPoint = player.transform.position;
+        }
+
+        uiPanel = FindFirstObjectByType<UIPanel>();
     }
 
     public void UpdateCheckpoint(int newCheckPointNum, Vector3 newPosition)
@@ -29,7 +37,7 @@ public class GameManager : MonoBehaviour
         {
             playerCheckpointIs = newCheckPointNum;
             respawnPoint = newPosition;
-            Debug.Log("Checkpoint Updated to: " + playerCheckpointIs);
+            //Debug.Log("cvheckpoint: " + playerCheckpointIs);
         }
     }
 
@@ -40,9 +48,9 @@ public class GameManager : MonoBehaviour
         isGameOver = true;
 
         //UI
-        if (gameOverPanel != null)
+        if (uiPanel != null)
         {
-            gameOverPanel.SetActive(true);
+            uiPanel.ShowGameOver();
         }
     }
 
@@ -57,8 +65,12 @@ public class GameManager : MonoBehaviour
         {
             player.transform.position = respawnPoint;
             player.GetComponent<PlayerController>().enabled = true;
-            //player.GetComponent<PlayerHealth>().ResetHealth(); //reset player health
+            player.GetComponent<PlayerHealth>().ResetHealth(); //reset player health
         }
-        if (gameOverPanel != null) gameOverPanel.SetActive(false);
+    }
+
+    public void RestartLevel()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 }

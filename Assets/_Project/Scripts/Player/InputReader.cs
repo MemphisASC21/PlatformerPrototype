@@ -216,7 +216,6 @@ namespace Platformer.Player
             //dash actions
             if (dashAction != null)
             {
-                Debug.Log("Dash input not being collected");
                 dashAction.Enable();
                 dashAction.performed += OnDashPerformed;
             }

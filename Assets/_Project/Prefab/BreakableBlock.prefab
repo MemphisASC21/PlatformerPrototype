@@ -147,4 +147,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 41aa25fabdb04cd43877605c51ed6c89, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  breakVFX: {fileID: 0}
+  config: {fileID: 11400000, guid: 79f6238a3d33fde42885e09849fa8c24, type: 2}
