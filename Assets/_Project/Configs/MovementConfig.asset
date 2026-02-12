@@ -17,7 +17,7 @@ MonoBehaviour:
   deceleration: 60
   turnAroundMultiplier: 1.5
   airControlMultiplier: 0.85
-  jumpForce: 10
+  jumpForce: 15
   jumpCutMultiplier: 0.5
   coyoteTime: 0.12
   gravityScale: 1.8

@@ -71,6 +71,7 @@ public class GameManager : MonoBehaviour
 
     public void RestartLevel()
     {
+        playerCheckpointIs = 0;
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 }

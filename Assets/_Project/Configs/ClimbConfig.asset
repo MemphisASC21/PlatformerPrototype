@@ -12,8 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4215da1d9d796be4f936641208486b4f, type: 3}
   m_Name: ClimbConfig
   m_EditorClassIdentifier: 
-  climbSpeed: 5
+  climbSpeed: 6
   slideSpeed: 2
   dashClimbMultiplier: 2
-  wallJumpForce: {x: 10, y: 15}
+  wallJumpForce: {x: 15, y: 15}
   maxGripTime: 2
+  dashClimbSpeed: 20
+  dashClimbDuration: 0.2

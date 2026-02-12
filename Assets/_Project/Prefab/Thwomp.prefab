@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 5951210438702637611}
   - component: {fileID: 757679063285733525}
   - component: {fileID: 1838754285537009318}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Thwomp
   m_TagString: Untagged
   m_Icon: {fileID: 0}

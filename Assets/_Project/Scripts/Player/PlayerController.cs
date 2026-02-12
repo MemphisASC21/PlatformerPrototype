@@ -176,6 +176,7 @@ namespace Platformer.Player
             UpdateHorizontalMovement();
             UpdateJump();
             UpdateGravityScale();
+            print(IsGrounded);
         }
 
         /*

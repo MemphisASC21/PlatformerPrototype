@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a23e67018b7b3d94897f3ad8694d6f75, type: 3}
   m_Name: FastSpike
   m_EditorClassIdentifier: 
-  damage: 20
+  damage: 7
   attackSpeed: 15
   retractSpeed: 8
   spikeHeight: 1

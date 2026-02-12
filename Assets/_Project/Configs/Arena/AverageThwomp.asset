@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 88eb5c144a4064b41852be25bf78b9a7, type: 3}
   m_Name: AverageThwomp
   m_EditorClassIdentifier: 
-  damage: 15
+  damage: 5
   fallSpeed: 12
   riseSpeed: 5
   bottomWaitTime: 1

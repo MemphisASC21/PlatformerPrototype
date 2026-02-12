@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 8679202223839920409}
   - component: {fileID: 2380790697610934235}
   - component: {fileID: 7709017314750800040}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: RopeClimb
   m_TagString: Climbable
   m_Icon: {fileID: 0}
